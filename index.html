@@ -1,1 +1,110 @@
-Hello World
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Hello World</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Fachada pública: solo se ve esto al abrir la URL. -->
+    <main id="facade" class="facade">
+        <h1>Hello World</h1>
+    </main>
+
+    <!-- App real, oculta hasta teclear ↑↑↓↓. No hay cambio de URL ni navegación. -->
+    <div class="app hidden" id="app">
+        <header class="app-header">
+            <h1>🔒 fluyendo 🔒</h1>
+            <span id="status" class="status status--off">Desconectado</span>
+        </header>
+
+        <!-- Panel de conexión -->
+        <section id="setup" class="setup">
+            <div class="setup__intro">
+                <p>Conecta con otra persona especial. La conversación viaja cifrada como debe ser
+                </p>
+            </div>
+
+            <div class="setup__roles">
+                <button id="btnCreate" class="btn btn--primary">Crear invitación</button>
+                <button id="btnJoin" class="btn btn--secondary">Unirse a una invitación</button>
+            </div>
+
+            <!-- Flujo Persona A -->
+            <div id="flowA" class="flow hidden">
+                <h2>Persona A</h2>
+                <ol class="steps">
+                    <li>
+                        <p><strong>Paso 1.</strong> Copia este código y envíalo a la otra persona por un canal seguro:
+                        </p>
+                        <textarea id="offerOut" class="code" readonly placeholder="Generando código..."></textarea>
+                        <button id="btnCopyOffer" class="btn btn--small">Copiar código</button>
+                    </li>
+                    <li>
+                        <p><strong>Paso 2.</strong> Pega aquí el código de respuesta que te envíe la otra persona:</p>
+                        <textarea id="answerIn" class="code"
+                            placeholder="Pega aquí el código de respuesta..."></textarea>
+                        <button id="btnAcceptAnswer" class="btn btn--small">Conectar</button>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Flujo Persona B -->
+            <div id="flowB" class="flow hidden">
+                <h2>Persona B</h2>
+                <ol class="steps">
+                    <li>
+                        <p><strong>Paso 1.</strong> Pega aquí el código que te envió la Persona A:</p>
+                        <textarea id="offerIn" class="code"
+                            placeholder="Pega aquí el código de invitación..."></textarea>
+                        <button id="btnGenAnswer" class="btn btn--small">Generar respuesta</button>
+                    </li>
+                    <li>
+                        <p><strong>Paso 2.</strong> Copia este código de respuesta y envíaselo a la Persona A:</p>
+                        <textarea id="answerOut" class="code" readonly
+                            placeholder="Aparecerá aquí tras generar la respuesta..."></textarea>
+                        <button id="btnCopyAnswer" class="btn btn--small">Copiar respuesta</button>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Ventana de chat -->
+        <section id="chat" class="chat hidden">
+            <div id="messages" class="messages" aria-live="polite"></div>
+            <form id="chatForm" class="chat__form">
+                <input id="msgInput" class="chat__input" type="text" placeholder="Escribe un mensaje..."
+                    autocomplete="off" maxlength="2000">
+                <button type="submit" class="btn btn--primary">Enviar</button>
+                <button type="button" id="btnClear" class="btn btn--danger" title="Borrar conversación">Borrar</button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        // Revela la app al pulsar ↑↑↓↓, sin navegar ni cambiar la URL (no deja rastro en el historial).
+        (function () {
+            const SECRET = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
+            const facade = document.getElementById("facade");
+            const app = document.getElementById("app");
+            let progress = 0;
+            document.addEventListener("keydown", (e) => {
+                if (facade.classList.contains("hidden")) return; // ya revelada: no interceptar flechas
+                if (SECRET.includes(e.key)) e.preventDefault(); // evita el scroll con las flechas
+                progress = e.key === SECRET[progress] ? progress + 1 : (e.key === SECRET[0] ? 1 : 0);
+                if (progress === SECRET.length) {
+                    progress = 0;
+                    facade.classList.add("hidden");
+                    app.classList.remove("hidden");
+                }
+            });
+        })();
+    </script>
+    <script src="chat.js"></script>
+</body>
+
+</html>
